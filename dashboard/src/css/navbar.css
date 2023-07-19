@@ -1,0 +1,38 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 250px !important;
+  height: 100vh !important;
+  transform: translateX(-85%);
+  background-color: white;
+  box-shadow: 0 0 10px #ddd !important;
+}
+.sidebar:hover {
+  transition: all 0.4s ease-in-out;
+  transform: translateX(0%);
+}
+
+.sidebar li a {
+  transition: 0.3s;
+  margin-bottom: 5px;
+  color: black;
+}
+.sidebar li a:hover,
+.sidebar li a.active,
+.sidebar li a:focus {
+  background-color: #f6f6f6;
+}
+.sidebar li span {
+  font-size: 14px;
+  margin-left: 10px;
+}
+nav {
+  position: relative;
+  top: 0;
+  left: 220px;
+}
+nav li a {
+  cursor: pointer;
+}
