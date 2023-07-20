@@ -93,7 +93,19 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
    }
    return navigation;
  };
-
+ const handleDelete = async (id) => {
+   try {
+     const response = await axios.delete(
+       `https://alakifekbackend.onrender.com/api/submit-form/delete/${id}`
+     );
+     // Update the clientCommands state to remove the deleted item
+     setFilterClient((prevState) =>
+       prevState.filter((item) => item._id !== id)
+     );
+   } catch (e) {
+     console.error(e);
+   }
+ };
   return (
     <div className="container-fluid p-5 ms-3">
       <div className="row height d-flex justify-content-center align-items-center my-3">
@@ -121,8 +133,9 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
               <th>Prénom</th>
               <th>Nom</th>
               <th>Type da Abonnement</th>
-              <th>Nouveau Date Da Abonnement</th>
+              <th>Nouveau Date de l'Abonnement</th>
               <th>Payé</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -183,6 +196,7 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
                   </td>
                   <td>{formatDateNoH(client.finDate)}</td>
                   <td>{client.mois} Mois</td>
+                 
                 </tr>
               );
             })}

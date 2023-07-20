@@ -46,8 +46,8 @@ export default function Useraccount() {
                         <hr className="mt-0 mb-4" />
                         <div className="row pt-1">
                           <div className="col-6 mb-3">
-                            <h6>Email</h6>
-                            <p className="text-muted">{userProfile?.email}</p>
+                            <h6>Address</h6>
+                            <p className="text-muted">{userProfile?.address}</p>
                           </div>
                           <div className="col-6 mb-3">
                             <h6>Télephone</h6>

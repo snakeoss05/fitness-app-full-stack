@@ -69,7 +69,7 @@ function ClientCommands() {
     }
   }
   return (
-    <div className="container mx-auto d-flex flex-column justify-content-start bg-white">
+    <div className="container mx-auto d-flex flex-column justify-content-start bg-light mt-5 p-3 rounded-4">
       <h1 className="mb-4 fw-bolder text-center">Creation De Nouveau Abonné</h1>
 
       <form onSubmit={registerform} className="row ms-4 mx-auto">
@@ -108,17 +108,7 @@ function ClientCommands() {
             className="form-control"
           />
         </div>
-        <div className="col-lg-5 col-10 my-2">
-          <label className="text-black m-1 form-check-label  ">Email</label>
-          <input
-            type="email"
-            name="email"
-            onChange={HandleChange}
-            value={register.email}
-            className="form-control"
-            placeholder="Example@gmail.com"
-          />
-        </div>
+        
         <div className="col-lg-5 col-10 my-2">
           <label className="text-black m-1 form-check-label  ">Address </label>
           <input
@@ -144,7 +134,7 @@ function ClientCommands() {
           />
         </div>
         <div className="col-lg-3 col-10 my-2">
-          <label class="form-check-label col-8" for="flexCheckDefault">
+          <label class="form-check-label col-12" for="flexCheckDefault">
             Date de Commencer
           </label>
           <DatePicker
@@ -154,8 +144,8 @@ function ClientCommands() {
           />
         </div>
 
-        <div className="col-lg-2 col-10 my-2">
-          <label class="form-check-label col-8" for="flexCheckDefault">
+        <div className="col-lg-2 col-10 my-2 ">
+          <label class="form-check-label col-12" for="flexCheckDefault">
             Date de terminé
           </label>
           <DatePicker

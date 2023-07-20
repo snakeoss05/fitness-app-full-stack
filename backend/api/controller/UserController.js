@@ -11,7 +11,6 @@ export default class UserController {
     const {
       name,
       lastname,
-      email,
       address,
       startdate,
       finDate,
@@ -30,7 +29,6 @@ export default class UserController {
         name,
         lastname,
         address,
-        email,
         startdate,
         finDate,
         phonenumber,
@@ -51,14 +49,14 @@ export default class UserController {
   }
 
   static async loginUser(req, res) {
-    const { email, password } = req.body;
-  
+    const { phonenumber, password } = req.body;
+
     const secretOrPrivateKey = process.env.ACCESS_TOKEN_SECRET;
-    const user = await UserDao.loginUser(email);
+    const user = await UserDao.loginUser(phonenumber);
 
     try {
       if (!user) {
-        return res.status(404).send("Email not registered.");
+        return res.status(404).send("User not registered.");
       }
 
       const isPasswordMatch = await bcrypt.compare(
@@ -106,15 +104,15 @@ export default class UserController {
     });
   }
   static async getClients(req, res) {
-   const page = parseInt(req.query.page) || 1; // Current page number
-   const limit = parseInt(req.query.limit) || 1;
-   try {
-     const items = await UserDao.getClientse(page, limit);
-     res.json(items);
-   } catch (error) {
-     console.error(error);
-     res.status(500).json({ message: "Internal server error" });
-   }
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = parseInt(req.query.limit) || 1;
+    try {
+      const items = await UserDao.getClientse(page, limit);
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
   static async getClientsByName(req, res) {
     try {
@@ -153,6 +151,18 @@ export default class UserController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Server error" });
+    }
+  }
+  static async deleteUser(req, res) {
+    const { id } = req.params;
+ 
+    try {
+      const UserDelete = await UserDao.deleteUserDao(id)
+       res.status(200).json(UserDelete);
+    
+    } catch (e) {
+      console.error(`Unable to delete client with id ${id}: ${e}`);
+      res.status(500).send({ error: e });
     }
   }
 }

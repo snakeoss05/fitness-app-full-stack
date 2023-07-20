@@ -26,7 +26,7 @@ useEffect(() => {
           `http://localhost:5000/api/ath/clients?page=${page}&limit=${limit}`
         )
         const { results, totalPages } = response.data;
-       console.log(response.data)
+      
           const formattedData = results.results.map((entry) => ({
             ...entry,
             isEditing: false,
@@ -308,6 +308,19 @@ useEffect(() => {
     }
     return navigation;
   };
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/ath/delete/${id}`
+      );
+      // Update the clientCommands state to remove the deleted item
+      setFilteredClientList((prevState) =>
+        prevState.filter((item) => item._id !== id)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <div className="p-5">
       <div className="row height d-flex justify-content-center align-items-center my-3">
@@ -333,20 +346,11 @@ useEffect(() => {
           <thead>
             <tr>
               <td>Prénom</td>
-              <td>
-                
-                  Nom 
-               
-              </td>
-              <td>Email</td>
+              <td>Nom</td>
+              <td>Address</td>
               <td>Numéro Téléphonique</td>
               <td>Abonnement type</td>
-              <td>
-               
-                  Abonnement Commencer
-              
-              
-              </td>
+              <td>Abonnement Commencer</td>
               <td>
                 Abonnement terminé{" "}
                 <i
@@ -355,6 +359,7 @@ useEffect(() => {
               </td>
 
               <td>Mise a Jour</td>
+              <th>Supprimer</th>
             </tr>
           </thead>
           <tbody>
@@ -363,7 +368,7 @@ useEffect(() => {
                 <tr>
                   <td>{client.name}</td>
                   <td>{client.lastname}</td>
-                  <td>{client.email}</td>
+                  <td>{client.address}</td>
                   <td>{client.phonenumber}</td>
                   <td>
                     {client.musculation ? (
@@ -435,8 +440,16 @@ useEffect(() => {
                   <td>
                     <button
                       className="btn btn-outline-success m-3 rounded-4 fw-bold"
-                      onClick={() => handleSave(client._id, finDate,client)}>
+                      onClick={() => handleSave(client._id, finDate, client)}>
                       Enregistrer
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => handleDelete(client._id)}
+                      type="button"
+                      className="btn btn-outline-danger m-3">
+                      <i className="fa-solid fa-trash"></i>
                     </button>
                   </td>
                 </tr>

@@ -33,7 +33,6 @@ export default class UserDao {
     name,
     lastname,
     address,
-    email,
     startdate,
     finDate,
     phonenumber,
@@ -44,16 +43,17 @@ export default class UserDao {
     taekwondo
   ) {
     try {
-      const existingUser = await connection.findOne({ email: email });
+      const existingUser = await connection.findOne({
+        phonenumber: phonenumber,
+      });
       if (existingUser) {
-        return { error: "Email already exists" };
+        return { error: "User already exists" };
       }
 
       const newUser = new User({
         name: name,
         lastname: lastname,
         address: address,
-        email: email,
         startdate: startdate,
         finDate: finDate,
         phonenumber: phonenumber,
@@ -73,9 +73,9 @@ export default class UserDao {
     }
   }
 
-  static async loginUser(email) {
+  static async loginUser(phonenumber) {
     try {
-      const user = await connection.findOne({ email: email });
+      const user = await connection.findOne({ phonenumber: phonenumber });
       return user;
     } catch (error) {
       console.error(error);
@@ -116,6 +116,17 @@ export default class UserDao {
       };
     } catch (e) {
       console.error(`Unable to retrieve client Historique ${e}`);
+      return { error: e };
+    }
+  }
+  static async deleteUserDao(id) {
+    try {
+      const deletedClient = await connection.findOneAndDelete({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      return new ClientCommands(deletedClient.value);
+    } catch (e) {
+      console.error(`Unable to delete client command with id ${id}: ${e}`);
       return { error: e };
     }
   }

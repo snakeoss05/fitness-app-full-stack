@@ -11,5 +11,5 @@ router.get("/profile", UserController.authenticateToken);
 router.get("/user", UserController.getUserProfile);
 router.post("/sendmsg", UserController.userSendMsg);
 router.get("/clients", UserController.getClients);
-
+router.delete("/delete/:id", UserController.deleteUser);
 export default router;

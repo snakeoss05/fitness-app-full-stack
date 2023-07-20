@@ -135,15 +135,5 @@ export default class FormDAO {
       return { error: e };
     }
   }
-  static async deleteClientCommands(id) {
-    try {
-      const deletedClient = await ClientList.findOneAndDelete({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      return new ClientCommands(deletedClient.value);
-    } catch (e) {
-      console.error(`Unable to delete client command with id ${id}: ${e}`);
-      return { error: e };
-    }
-  }
+  
 }

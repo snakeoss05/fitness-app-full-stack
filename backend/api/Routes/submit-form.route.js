@@ -8,6 +8,6 @@ router.get("/clientCommands", FormController.getClientCommands);
 router.get("/historique", FormController.getHistorique);
 router.get("/clientCommandst/:email", FormController.getClientCommandsByEmail);
 router.get("/filterhistorique/:query", FormController.getHistoriqueByName);
-router.delete("/delete/:id", FormController.deleteClientCommands);
+
 router.get("/gethistorique/:idClient", FormController.getHistoriqueByid);
 export default router;

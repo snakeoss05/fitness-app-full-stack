@@ -8,7 +8,7 @@ export default function Login() {
   const [verificationMessaget, setVerificationMessagett] = useState("");
   const { userState, UserLog } = useUser();
   const [logform, setlogform] = useState({
-    email: "",
+    phonenumber: "",
     password: "",
   });
 
@@ -47,7 +47,7 @@ export default function Login() {
           <div className="row">
             <div className="col-md-6 offset-md-3">
               <h2 className="text-center text-dark mt-5">Login Form</h2>
-              
+
               <div className="card my-5">
                 <form
                   className="card-body cardbody-color p-lg-5"
@@ -65,11 +65,11 @@ export default function Login() {
                       type="text"
                       className="form-control"
                       id="Username"
-                      name="email"
+                      name="phonenumber"
                       onChange={HandleChange}
-                      value={logform.email}
+                      value={logform.phonenumber}
                       aria-describedby="emailHelp"
-                      placeholder="User Name"
+                      placeholder="Numéro Télephonique"
                     />
                   </div>
                   <div className="mb-3">
