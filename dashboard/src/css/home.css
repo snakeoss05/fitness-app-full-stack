@@ -1,0 +1,98 @@
+
+
+#schedule {
+  padding: 0px 0px 140px 0px;
+  background-image: url(../assests/images/schedule-bg.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#schedule table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid #fff;
+}
+
+#schedule table tbody {
+  border-top: 1px solid #fff;
+}
+
+#schedule table tbody tr {
+  border-bottom: 1px solid #fff;
+}
+
+#schedule table tbody tr td {
+  border-right: 1px solid #fff;
+  height: 100px;
+}
+
+#schedule table tr td {
+  color: #fff;
+  font-size: 13px;
+  text-transform: capitalize;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+.schedule-table.filtering .ts-item {
+  opacity: 0;
+  transition: all 0.5s;
+}
+
+.schedule-table.filtering .ts-item.show {
+  opacity: 1;
+  transition: all 0.5s;
+}
+
+#schedule .filters {
+  margin-bottom: 40px;
+}
+#schedule .filters ul {
+  padding: 0;
+  text-align: center;
+}
+#schedule .filters ul li {
+  list-style: none;
+  display: inline;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  text-transform: capitalize;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+#schedule .filters ul li:after {
+  content: "/";
+  margin-left: 10px;
+  color: #fff;
+}
+#schedule .filters ul li:last-child {
+  margin-right: 0px;
+}
+#schedule .filters ul li:last-child::after {
+  display: none;
+}
+#schedule .filters ul li.active,
+#schedule .filters ul li:hover {
+  color: #ed563b;
+}
+#schedule .filters-content {
+  margin-top: 50px;
+}
+#schedule .filters-content .show {
+  opacity: 1;
+  visibility: visible;
+  transition: all 350ms;
+}
+#schedule .filters-content .hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 350ms;
+}
