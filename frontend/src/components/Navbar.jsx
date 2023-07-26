@@ -46,10 +46,21 @@ export default function Navbar() {
                   onClick={() => settogller(!toggler)}>
                   <a href="#contact-us">Contact</a>
                 </li>
-                <li
-                  className="main-button"
-                  onClick={() => settogller(!toggler)}>
-                  <Link to="/login">Sign in</Link>
+                {UserLog && (
+                  <li
+                    className="btn btn-sm "
+                    onClick={() => settogller(!toggler)}>
+                    <Link to="/ProfileInformation">
+                      <i
+                        className="fa-regular fa-user fs-5"
+                        style={{ color: "#ed563b" }}></i>
+                    </Link>
+                  </li>
+                )}
+                <li className="main-button" onClick={() => userState(false)}>
+                  <Link to="/login" className="">
+                    {UserLog ? "Sign Out" : "Sign In"}
+                  </Link>
                 </li>
               </ul>
               <a
