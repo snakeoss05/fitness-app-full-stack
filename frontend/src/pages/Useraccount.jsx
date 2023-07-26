@@ -201,9 +201,9 @@ export default function Useraccount() {
                             ""
                           )}
                         </td>
-                        <td>{client.client.finDate}</td>
-                        <td>{client.finDate}</td>
-                        <td>{client.mois} Mois</td>
+                        <td>{formatDate(client.client.finDate)}</td>
+                        <td>{formatDate(client.finDate)}</td>
+                        <td>{client.mois||0} Mois</td>
                       </tr>
                     );
                   })}
@@ -254,7 +254,7 @@ if (userProfile)
      const date = new Date(dateStr);
      const formattedDate = date.toLocaleDateString("fr-FR", {
        year: "numeric",
-       month: "long",
+       month: "numeric",
        day: "numeric",
      });
      return formattedDate;

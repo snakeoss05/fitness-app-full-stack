@@ -1,18 +1,11 @@
-import React from "react";
+import React,{useState} from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { useUser } from "../context/user";
 export default function Navbar() {
   const { userState, UserLog } = useUser();
-   const ChangLogoutIcon = () => {
-    if( UserLog)
-
-    return <Link to="/login" onClick={()=>userState(false)}>Sign Out</Link>; 
-     else
-      return <Link to="/login">Sign in</Link>;
-     
-     
-   };
+  const [toggler,settogller]=useState(false)
+ 
   return (
     <header className="header-area header-sticky">
       <div className="container">
@@ -25,27 +18,44 @@ export default function Navbar() {
               </a>
               {/* ***** Logo End ***** */}
               {/* ***** Menu Start ***** */}
-              <ul className="nav">
-                <li className="scroll-to-section">
+              <ul className={`nav ${toggler ? "shownav" : ""}`}>
+                <li
+                  className="scroll-to-section"
+                  onClick={() => settogller(!toggler)}>
                   <Link to="/home" className="active">
                     ACCUEIL
                   </Link>
                 </li>
-                <li className="scroll-to-section">
+                <li
+                  className="scroll-to-section"
+                  onClick={() => settogller(!toggler)}>
                   <Link to="/home">À PROPOS</Link>
                 </li>
-                <li className="scroll-to-section">
+                <li
+                  className="scroll-to-section"
+                  onClick={() => settogller(!toggler)}>
                   <a href="#our-classes">Classes</a>
                 </li>
-                <li className="scroll-to-section">
+                <li
+                  className="scroll-to-section"
+                  onClick={() => settogller(!toggler)}>
                   <a href="#schedule">HORAIRES</a>
                 </li>
-                <li className="scroll-to-section">
+                <li
+                  className="scroll-to-section"
+                  onClick={() => settogller(!toggler)}>
                   <a href="#contact-us">Contact</a>
                 </li>
-                <li className="main-button">{ChangLogoutIcon()}</li>
+                <li
+                  className="main-button"
+                  onClick={() => settogller(!toggler)}>
+                  <Link to="/login">Sign in</Link>
+                </li>
               </ul>
-              <a className="menu-trigger" href="#">
+              <a
+                className={`menu-trigger ${toggler ? "active" : ""}`}
+                href="#"
+                onClick={() => settogller(!toggler)}>
                 <span>Menu</span>
               </a>
               {/* ***** Menu End ***** */}

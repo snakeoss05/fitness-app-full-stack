@@ -1,15 +1,31 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect,useState } from "react";
 import "./Home.css";
-
+import axios from "axios"
 export default function Home() {
   const videoRef = useRef(null);
-
+ const [selectedDay, setSelectedDay] = useState("monday");
+ const [scheduleData, setScheduleData] = useState([]);
+ 
   useEffect(() => {
     const video = videoRef.current;
     video.muted = true;
     video.autoplay = true;
     video.loop = true;
   }, []);
+const handleDaySelect = (day) => {
+  setSelectedDay(day);
+};
+const fetchScheduleData = () => {
+  axios
+    .get("http://localhost:5000/api/submit-form/schedule/get")
+    .then((response) => setScheduleData(response.data.newFormData))
+    .catch((error) => console.error("Error fetching data:", error));
+};
+// Sample data (you can replace this with your actual data)
+useEffect(() => {
+  fetchScheduleData();
+}, []);
+
 
   return (
     <div>
@@ -162,14 +178,9 @@ export default function Home() {
               <div className="col-lg-6 offset-lg-3">
                 <div className="section-heading">
                   <h2>
-                    Our <em>Classes</em>
+                    Nous <em>Classes</em>
                   </h2>
                   <img src="../assests/images/line-dec.png" alt="" />
-                  <p>
-                    Nunc urna sem, laoreet ut metus id, aliquet consequat magna.
-                    Sed viverra ipsum dolor, ultricies fermentum massa consequat
-                    eu.
-                  </p>
                 </div>
               </div>
             </div>
@@ -355,16 +366,11 @@ export default function Home() {
           <div className="container">
             <div className="row">
               <div className="col-lg-6 offset-lg-3">
-                <div className="section-heading dark-bg">
+                <div className="section-heading dark-bg text-danger text-center">
                   <h2>
                     Classes <em>Schedule</em>
                   </h2>
                   <img src="../assests/images/line-dec.png" alt="" />
-                  <p>
-                    Nunc urna sem, laoreet ut metus id, aliquet consequat magna.
-                    Sed viverra ipsum dolor, ultricies fermentum massa consequat
-                    eu.
-                  </p>
                 </div>
               </div>
             </div>
@@ -372,13 +378,36 @@ export default function Home() {
               <div className="col-lg-12">
                 <div className="filters">
                   <ul className="schedule-filter">
-                    <li className="active" data-tsfilter="monday">
-                      Monday
+                    <li
+                      className={selectedDay === "monday" ? "active" : ""}
+                      onClick={() => handleDaySelect("monday")}>
+                      Lundi
                     </li>
-                    <li data-tsfilter="tuesday">Tuesday</li>
-                    <li data-tsfilter="wednesday">Wednesday</li>
-                    <li data-tsfilter="thursday">Thursday</li>
-                    <li data-tsfilter="friday">Friday</li>
+                    <li
+                      className={selectedDay === "tuesday" ? "active" : ""}
+                      onClick={() => handleDaySelect("tuesday")}>
+                      Mardi
+                    </li>
+                    <li
+                      className={selectedDay === "wednesday" ? "active" : ""}
+                      onClick={() => handleDaySelect("wednesday")}>
+                      Mercredi
+                    </li>
+                    <li
+                      className={selectedDay === "thursday" ? "active" : ""}
+                      onClick={() => handleDaySelect("thursday")}>
+                      Jeudi
+                    </li>
+                    <li
+                      className={selectedDay === "friday" ? "active" : ""}
+                      onClick={() => handleDaySelect("friday")}>
+                      Vendredi
+                    </li>
+                    <li
+                      className={selectedDay === "Saturday" ? "active" : ""}
+                      onClick={() => handleDaySelect("Saturday")}>
+                      Samedi
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -386,66 +415,19 @@ export default function Home() {
                 <div className="schedule-table filtering">
                   <table>
                     <tbody>
-                      <tr>
-                        <td className="day-time">Cours Physique</td>
-                        <td
-                          className="monday ts-item show"
-                          data-tsmeta="monday">
-                          10:00AM - 11:30AM
-                        </td>
-                        <td className="tuesday ts-item" data-tsmeta="tuesday">
-                          2:00PM - 3:30PM
-                        </td>
-                        <td>coach Name</td>
-                      </tr>
-                      <tr>
-                        <td className="day-time">Cours Taekwondo</td>
-                        <td className="friday ts-item" data-tsmeta="friday">
-                          10:00AM - 11:30AM
-                        </td>
-                        <td
-                          className="thursday friday ts-item"
-                          data-tsmeta="thursday">
-                          2:00PM - 3:30PM
-                        </td>
-                        <td>coach Name</td>
-                      </tr>
-                      <tr>
-                        <td className="day-time">Cours Boxe</td>
-                        <td className="tuesday ts-item" data-tsmeta="tuesday">
-                          10:00AM - 11:30AM
-                        </td>
-                        <td
-                          className="monday ts-item show"
-                          data-tsmeta="monday">
-                          2:00PM - 3:30PM
-                        </td>
-                        <td>coach Name</td>
-                      </tr>
-                      <tr>
-                        <td className="day-time">Musculation</td>
-                        <td
-                          className="wednesday ts-item"
-                          data-tsmeta="wednesday">
-                          10:00AM - 11:30AM
-                        </td>
-                        <td className="friday ts-item" data-tsmeta="friday">
-                          2:00PM - 3:30PM
-                        </td>
-                        <td>coach Name</td>
-                      </tr>
-                      <tr>
-                        <td className="day-time">Advanced Training</td>
-                        <td className="thursday ts-item" data-tsmeta="thursday">
-                          10:00AM - 11:30AM
-                        </td>
-                        <td
-                          className="wednesday ts-item"
-                          data-tsmeta="wednesday">
-                          2:00PM - 3:30PM
-                        </td>
-                        <td>coach Name</td>
-                      </tr>
+                      {scheduleData.map((item, index) => (
+                        <tr
+                          key={index}
+                          className={`${
+                            item.day === selectedDay ? "show" : "hide"
+                          }`}>
+                          <td className="col-3">{item.cour}</td>
+                          <td data-tsmeta={item.day} className="col-3">
+                            {item.time}
+                          </td>
+                          <td className="col-3">{item.coach}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

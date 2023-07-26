@@ -14,10 +14,12 @@ const [finDate, setFintDate] = useState(new Date());
 const [currentPage, setCurrentPage] = useState(1);
 const [totalPages, setTotalPages] = useState(3);
 const [posteperpage, setposteperpage] = useState(8);
-
+const [schedule,setschedule]=useState([])
 useEffect(() => {
   fetchItems(currentPage, posteperpage);
+  
 }, [currentPage]);
+
    const fetchItems = async (page,limit) => {
     // Make a GET request to your Express backend to retrieve clientCommands data
     try {
@@ -65,11 +67,11 @@ useEffect(() => {
      setQuery(event.target.value);
      debouncedHandleSearch();
    };
-  async function handleSave(id, newValue,client) {
+  async function handleSave(idClient, newValue,client,mois) {
     
      setClientList((prevData) =>
        prevData.map((entry) =>
-         entry._id === id
+         entry._id === idClient
            ? { ...entry, finDate: newValue, isEditing: false }
            : entry
        )
@@ -77,12 +79,12 @@ useEffect(() => {
     try {
       const updateDate = new Date(newValue); 
       const response = await axios.put(
-        `http://localhost:5000/api/ath/user/${id}`,
+        `http://localhost:5000/api/ath/user/${idClient}`,
         { updateDate }
       );
       const response2 = axios.post(
         "http://localhost:5000/api/submit-form/post",
-        { client, updateDate, id }
+        { client, updateDate,idClient,mois }
       );
      Swal.fire({
        position: "top-center",
@@ -211,28 +213,30 @@ useEffect(() => {
     if (givenDate < currentDate) {
       return (
         <>
-          {formattedDate} il' ya de {diffInDays} jour
+          <span className="ms-2">
+            {formattedDate} il' ya de {diffInDays} jour
+          </span>
           <td>
             <h6 className="css-selector-danger text-white text-center fw-bold">
               No Payer
             </h6>{" "}
             <button
-              className="btn btn-outline-dark mx-1 btn-sm "
+              className="btn btn-outline-dark m-1 btn-sm "
               onClick={() => addOneMonthToServerDate(dateStr, 1, id, client)}>
               +1 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 2, id, client)}>
               +2 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 3, id, client)}>
               +3 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 6, id, client)}>
               +6 Mois
             </button>
@@ -248,24 +252,29 @@ useEffect(() => {
               Payer
             </h6>{" "}
             <button
-              className="btn btn-outline-dark mx-1 btn-sm "
+              className="btn btn-outline-dark m-1 btn-sm "
               onClick={() => addOneMonthToServerDate(dateStr, 1, id, client)}>
               +1 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 2, id, client)}>
               +2 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 3, id, client)}>
               +3 Mois
             </button>
             <button
-              className="btn btn-outline-dark mx-1 btn-sm"
+              className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 6, id, client)}>
               +6 Mois
+            </button>
+            <button
+              className="btn btn-outline-dark btn-sm  m-2 fs-6 rounded-5"
+              onClick={() => handleEdit(client._id)}>
+              <i className="fa-solid fa-wrench "></i>
             </button>
           </td>
         </>
@@ -309,17 +318,31 @@ useEffect(() => {
     return navigation;
   };
   const handleDelete = async (id) => {
-    try {
-      const response = await axios.delete(
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        try {
+      const response = axios.delete(
         `http://localhost:5000/api/ath/delete/${id}`
       );
       // Update the clientCommands state to remove the deleted item
       setFilteredClientList((prevState) =>
         prevState.filter((item) => item._id !== id)
       );
-    } catch (e) {
+    }catch (e) {
       console.error(e);
     }
+      }
+    });
+     
   };
   return (
     <div className="p-5">
@@ -420,13 +443,6 @@ useEffect(() => {
                     {formatDate(client.startdate)}
                   </td>
                   <td className="font-monospace ">
-                    <span className="position-relative d-block">
-                      <button
-                        className="btn btn-outline-dark btn-sm position-absolute end-0 m-3  ms-auto fs-6 rounded-5"
-                        onClick={() => handleEdit(client._id)}>
-                        <i className="fa-solid fa-wrench  "></i>
-                      </button>
-                    </span>
                     {client.isEditing ? (
                       <DatePicker
                         selected={finDate}
@@ -434,13 +450,16 @@ useEffect(() => {
                         className="form-control z-3 m-2"
                       />
                     ) : (
-                      isDatePassed(client.finDate, client._id, client)
+                      <>
+                        {isDatePassed(client.finDate, client._id, client)}
+                       
+                      </>
                     )}
                   </td>
                   <td>
                     <button
                       className="btn btn-outline-success m-3 rounded-4 fw-bold"
-                      onClick={() => handleSave(client._id, finDate, client)}>
+                      onClick={() => handleSave(client._id, finDate, client,1)}>
                       Enregistrer
                     </button>
                   </td>
@@ -448,7 +467,7 @@ useEffect(() => {
                     <button
                       onClick={() => handleDelete(client._id)}
                       type="button"
-                      className="btn btn-outline-danger m-3">
+                      className="btn btn-outline-danger m-3 rounded-circle">
                       <i className="fa-solid fa-trash"></i>
                     </button>
                   </td>

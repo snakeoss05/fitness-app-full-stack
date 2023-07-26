@@ -138,9 +138,10 @@ export default class UserDao {
             $or: [
               { name: { $regex: query, $options: "i" } },
               { lastname: { $regex: query, $options: "i" } },
+              { phonenumber: query },
             ],
           })
-          .limit(6)
+          
           .toArray();
         return cliente;
       }

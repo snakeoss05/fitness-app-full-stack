@@ -279,6 +279,10 @@ schedule
   opacity: 1;
   transition: all 0.5s;
 }
+.hide{
+  opacity: 0;
+  display: none;
+}
 
 #schedule .filters {
   margin-bottom: 40px;
