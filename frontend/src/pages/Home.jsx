@@ -112,7 +112,7 @@ useEffect(() => {
                   <div className="right-content">
                     <h4>Cours Taekwondo</h4>
                     <p>
-                      You may want to browse through{"{"}" "{"}"}
+                      You may want to browse through
                       Digital Marketing
                     </p>
 
