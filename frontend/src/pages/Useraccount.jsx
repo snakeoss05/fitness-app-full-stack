@@ -236,7 +236,7 @@ const getUserById = async () => {
   }
 };
 if (!userProfile) getUserById();
-   },[])
+   },[userProfile])
    
   
 

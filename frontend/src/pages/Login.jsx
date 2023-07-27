@@ -24,8 +24,8 @@ export default function Login() {
 
      userState(true);
     } catch (error) {
-     
-      console.log(error.response.data);
+     setVerificationMessagett(error.response.data);
+    
      
     }
   };

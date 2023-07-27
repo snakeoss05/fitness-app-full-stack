@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useRef, useEffect,useState } from "react";
 import "./Home.css";
 import axios from "axios"
@@ -111,16 +113,10 @@ useEffect(() => {
                     <h4>Cours Taekwondo</h4>
                     <p>
                       You may want to browse through{"{"}" "{"}"}
-                      <a rel="nofollow" href="#" target="_parent">
-                        Digital Marketing
-                      </a>
-                      {"{"}" "{"}"}
-                      or{"{"}" "{"}"}
-                      <a href="#">Corporate</a>
-                      {"{"}" "{"}"}
-                      HTML CSS templates on our website.
+                      Digital Marketing
                     </p>
-                    <a href="#" className="text-button">
+
+                    <a href="#schedule" className="text-button">
                       Discover More
                     </a>
                   </div>
@@ -332,7 +328,7 @@ useEffect(() => {
                       metus, pellentesque pharetra semper vel, accumsan a neque.
                     </p>
                     <div className="main-button">
-                      <a href="#">View Schedule</a>
+                      <a href="#schedule">View Schedule</a>
                     </div>
                   </article>
                   <article
@@ -449,7 +445,8 @@ useEffect(() => {
                     style={{ border: "0" }}
                     allowfullscreen=""
                     loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    referrerpolicy="no-referrer-when-downgrade"
+                  />
                 </div>
               </div>
               <div className="col-lg-6 col-md-6 col-xs-12">
