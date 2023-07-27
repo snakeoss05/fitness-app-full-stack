@@ -16,7 +16,7 @@ export default function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/ath/login",
+        "https://royalfitness.onrender.com/api/ath/login",
        logform
       );
 

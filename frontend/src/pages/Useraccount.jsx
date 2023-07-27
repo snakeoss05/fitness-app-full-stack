@@ -222,11 +222,14 @@ const getUserById = async () => {
   var token = Cookies.get("token");
 
   try {
-    const response = await axios.get(`http://localhost:5000/api/ath/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `https://royalfitness.onrender.com:10000/api/ath/user`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     setUserProfile(response.data);
   } catch (error) {
     console.error(error);
@@ -241,7 +244,7 @@ if (!userProfile) getUserById();
 if (userProfile)
   axios
     .get(
-      `http://localhost:5000/api/submit-form/gethistorique/${userProfile._id}`
+      `https://royalfitness.onrender.com:10000/api/submit-form/gethistorique/${userProfile._id}`
     )
     .then((res) => {
       setHistorique(res.data);
