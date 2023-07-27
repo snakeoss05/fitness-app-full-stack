@@ -17,7 +17,7 @@ const handleDaySelect = (day) => {
 };
 const fetchScheduleData = () => {
   axios
-    .get("https://royalfitness.onrender.com/api/submit-form/schedule/get")
+    .get("https://royalfitness.onrender.com:10000/api/submit-form/schedule/get")
     .then((response) => setScheduleData(response.data.newFormData))
     .catch((error) => console.error("Error fetching data:", error));
 };
