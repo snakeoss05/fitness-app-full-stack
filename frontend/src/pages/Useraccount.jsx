@@ -223,7 +223,7 @@ const getUserById = async () => {
 
   try {
     const response = await axios.get(
-      `https://royalfitness.onrender.com:10000/api/ath/user`,
+      `https://royalfitness.onrender.com/api/ath/user`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -244,7 +244,7 @@ if (!userProfile) getUserById();
 if (userProfile)
   axios
     .get(
-      `https://royalfitness.onrender.com:10000/api/submit-form/gethistorique/${userProfile._id}`
+      `https://royalfitness.onrender.com/api/submit-form/gethistorique/${userProfile._id}`
     )
     .then((res) => {
       setHistorique(res.data);
