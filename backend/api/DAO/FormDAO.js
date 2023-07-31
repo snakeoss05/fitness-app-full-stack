@@ -193,10 +193,22 @@ export default class FormDAO {
       const schedules = await schedule.findOneAndDelete({
         _id: new mongoose.Types.ObjectId(id),
       });
-      return  schedules
+      return schedules;
     } catch (e) {
       console.error(`Unable to retrieve schedules ${e}`);
       return { error: e };
+    }
+  }
+  static async UpdateSchedule(day,time) {
+     const filter = { day: day };
+   const update = { $set: { time: time } };
+
+    try {
+      const scheduleDelete = await schedule.updateOne(filter, update);
+      res.status(200).json(scheduleDelete);
+    } catch (e) {
+      console.error(`Unable to delete schedule with id ${id}: ${e}`);
+      res.status(500).send({ error: e });
     }
   }
 }

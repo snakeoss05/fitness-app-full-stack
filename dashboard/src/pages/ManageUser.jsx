@@ -6,54 +6,117 @@ import { debounce } from "lodash";
 import Swal from "sweetalert2";
 
 export default function ManageUser() {
-const [clientList, setClientList] = useState([]);
-const [filteredClientList, setFilteredClientList] = useState([]);
-const [query, setQuery] = useState("");
-const [showAll, setShowAll] = useState(true);
-const [finDate, setFintDate] = useState(new Date());
-const [currentPage, setCurrentPage] = useState(1);
-const [totalPages, setTotalPages] = useState(3);
-const [posteperpage, setposteperpage] = useState(8);
-const [schedule,setschedule]=useState([])
-useEffect(() => {
-  fetchItems(currentPage, posteperpage);
-  
-}, [currentPage]);
+  const [clientList, setClientList] = useState([]);
+  const [filteredClientList, setFilteredClientList] = useState([]);
+  const [query, setQuery] = useState("");
+  const [showAll, setShowAll] = useState(true);
+  const [finDate, setFintDate] = useState(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(3);
+  const [posteperpage, setposteperpage] = useState(8);
+  const [schedule, setschedule] = useState([]);
+  useEffect(() => {
+    fetchItems(currentPage, posteperpage);
+  }, [currentPage]);
 
-   const fetchItems = async (page,limit) => {
+  const fetchItems = async (page, limit) => {
     // Make a GET request to your Express backend to retrieve clientCommands data
     try {
-     
-     const response=await axios.get(
-          `http://localhost:5000/api/ath/clients?page=${page}&limit=${limit}`
-        )
-        const { results, totalPages } = response.data;
-      
-          const formattedData = results.results.map((entry) => ({
-            ...entry,
-            isEditing: false,
-          }));
-          
-          setClientList(formattedData);
-          setTotalPages(totalPages);
-      
+      const response = await axios.get(
+        `http://localhost:5000/api/ath/clients?page=${page}&limit=${limit}`
+      );
+      console.log(response.data)
+      const { results, totalPages } = response.data.items;
+
+      const formattedData = results.map((entry) => ({
+        ...entry,
+        isEditing: false,
+      }));
+
+      setClientList(formattedData);
+      setTotalPages(totalPages);
     } catch (error) {
       console.error("Error retrieving items:", error);
     }
-  }
+  };
+
   const handleSearch = async () => {
-    
     try {
       const response = await axios.get(
         `http://localhost:5000/api/ath/Search/${query}`
       );
       if (query) {
         setFilteredClientList(response.data);
+      } else {
+        setFilteredClientList(clientList);
       }
-      else {setFilteredClientList(clientList)}
     } catch (error) {
       console.error(error);
     }
+  };
+  const handleFilterByBoxe = async (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/ath/clients/boxe?page=${currentPage}&limit=${posteperpage}`
+        );
+       
+        const { results, totalPages } = response.data.newFormData;
+        setFilteredClientList(results);
+        setTotalPages(totalPages);
+      } catch (error) {
+        console.error(error);
+      }
+    } else setFilteredClientList(clientList);
+  };
+  const handleFilterBycardio = async (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/ath/clients/cardio?page=${currentPage}&limit=${posteperpage}`
+        );
+
+        const { results, totalPages } = response.data.newFormData;
+        setFilteredClientList(results);
+        setTotalPages(totalPages);
+      } catch (error) {
+        console.error(error);
+      }
+    } else setFilteredClientList(clientList);
+  };
+  const handleFilterBymusculation = async (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/ath/clients/musculation?page=${currentPage}&limit=${posteperpage}`
+        );
+
+         const { results, totalPages } = response.data.newFormData;
+         setFilteredClientList(results);
+         setTotalPages(totalPages);
+      } catch (error) {
+        console.error(error);
+      }
+    } else setFilteredClientList(clientList);
+  };
+  const handleFilterBytaekwando = async (e) => {
+    const { checked } = e.target;
+    if (checked) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/ath/clients/taekwando?page=${currentPage}&limit=${posteperpage}`
+        );
+
+         const { results, totalPages } = response.data.newFormData;
+         setFilteredClientList(results);
+         setTotalPages(totalPages);
+      } catch (error) {
+        console.error(error);
+      }
+    } else setFilteredClientList(clientList);
   };
   const debouncedHandleSearch = debounce(handleSearch, 500);
   const handleEdit = (id) => {
@@ -63,109 +126,103 @@ useEffect(() => {
       )
     );
   };
-   const handleInputChange = (event) => {
-     setQuery(event.target.value);
-     debouncedHandleSearch();
-   };
-  async function handleSave(idClient, newValue,client,mois) {
-    
-     setClientList((prevData) =>
-       prevData.map((entry) =>
-         entry._id === idClient
-           ? { ...entry, finDate: newValue, isEditing: false }
-           : entry
-       )
-     );
+  const handleInputChange = (event) => {
+    setQuery(event.target.value);
+    debouncedHandleSearch();
+  };
+  async function handleSave(idClient, newValue, client, mois) {
+    setClientList((prevData) =>
+      prevData.map((entry) =>
+        entry._id === idClient
+          ? { ...entry, finDate: newValue, isEditing: false }
+          : entry
+      )
+    );
     try {
-      const updateDate = new Date(newValue); 
+      const updateDate = new Date(newValue);
       const response = await axios.put(
         `http://localhost:5000/api/ath/user/${idClient}`,
         { updateDate }
       );
       const response2 = axios.post(
         "http://localhost:5000/api/submit-form/post",
-        { client, updateDate,idClient,mois }
+        { client, updateDate, idClient, mois }
       );
-     Swal.fire({
-       position: "top-center",
-       icon: "success",
-       title: "Your work has been saved",
-       showConfirmButton: false,
-       timer: 1500,
-     });
+      Swal.fire({
+        position: "top-center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       // Return the response data
       return response.data;
     } catch (error) {
       throw new Error("Failed to update document field");
     }
   }
-   async function addOneMonthToServerDate(serverDateStr, mois, id,client) {
-     // Parse the server date string into a Date object
-     Swal.fire({
-       title: `voulez-vous ajouter ${mois} mois?`,
-       showDenyButton: true,
-       showCancelButton: true,
-       confirmButtonText: "Confirmer",
-       denyButtonText: `Ne confirme pas`,
-     }).then((result) => {
-       /* Read more about isConfirmed, isDenied below */
-       if (result.isConfirmed) {
-         Swal.fire("Saved!", "", "success");
-         var serverDate = new Date(serverDateStr);
+  async function addOneMonthToServerDate(serverDateStr, mois, id, client) {
+    // Parse the server date string into a Date object
+    Swal.fire({
+      title: `voulez-vous ajouter ${mois} mois?`,
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Confirmer",
+      denyButtonText: `Ne confirme pas`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        Swal.fire("Saved!", "", "success");
+        var serverDate = new Date(serverDateStr);
 
-         // Add one month to the date
-         serverDate.setMonth(serverDate.getMonth() + mois);
+        // Add one month to the date
+        serverDate.setMonth(serverDate.getMonth() + mois);
 
-         // Handle cases where the original date's day is greater than the maximum number of days in the updated month
-         if (
-           serverDate.getDate() !==
-           new Date(
-             serverDate.getFullYear(),
-             serverDate.getMonth(),
-             0
-           ).getDate()
-         ) {
-           serverDate = new Date(
-             serverDate.getFullYear(),
-             serverDate.getMonth() + 1,
-             0
-           );
-         }
+        // Handle cases where the original date's day is greater than the maximum number of days in the updated month
+        if (
+          serverDate.getDate() !==
+          new Date(serverDate.getFullYear(), serverDate.getMonth(), 0).getDate()
+        ) {
+          serverDate = new Date(
+            serverDate.getFullYear(),
+            serverDate.getMonth() + 1,
+            0
+          );
+        }
 
-         // Retrieve the updated date
-         var updateDate = serverDate.toISOString().split("T")[0];
+        // Retrieve the updated date
+        var updateDate = serverDate.toISOString().split("T")[0];
 
-         let idClient = client._id;
-         try {
-           const response2 = axios.post(
-             "http://localhost:5000/api/submit-form/post",
-             { client, updateDate, mois, idClient }
-           );
+        let idClient = client._id;
+        try {
+          const response2 = axios.post(
+            "http://localhost:5000/api/submit-form/post",
+            { client, updateDate, mois, idClient }
+          );
 
-           const response = axios.put(
-             `http://localhost:5000/api/ath/user/${id}`,
-             {
-               updateDate,
-             }
-           );
+          const response = axios.put(
+            `http://localhost:5000/api/ath/user/${id}`,
+            {
+              updateDate,
+            }
+          );
 
-           setClientList((prevData) =>
-             prevData.map((entry) =>
-               entry._id === id ? { ...entry, finDate: updateDate } : entry
-             )
-           );
+          setClientList((prevData) =>
+            prevData.map((entry) =>
+              entry._id === id ? { ...entry, finDate: updateDate } : entry
+            )
+          );
 
-           // Return the response data
-           return response.data;
-         } catch (error) {
-           throw new Error("Failed to update document field");
-         }
-       } else if (result.isDenied) {
-         Swal.fire("Changes are not saved", "", "info");
-       }
-     });
-     
-   }
+          // Return the response data
+          return response.data;
+        } catch (error) {
+          throw new Error("Failed to update document field");
+        }
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
   function calculateDateDifference(endDate) {
     var start = new Date();
     var end = new Date(endDate);
@@ -196,7 +253,7 @@ useEffect(() => {
     });
     return formattedDate;
   }
-  function isDatePassed(dateStr, id,client) {
+  function isDatePassed(dateStr, id, client) {
     // Parse the given date string into a Date object
     var givenDate = new Date(dateStr);
     // Get the current date
@@ -239,6 +296,11 @@ useEffect(() => {
               className="btn btn-outline-dark m-1 btn-sm"
               onClick={() => addOneMonthToServerDate(dateStr, 6, id, client)}>
               +6 Mois
+            </button>
+            <button
+              className="btn btn-outline-dark btn-sm  m-2 fs-6 rounded-5"
+              onClick={() => handleEdit(client._id)}>
+              <i className="fa-solid fa-wrench "></i>
             </button>
           </td>
         </>
@@ -309,7 +371,7 @@ useEffect(() => {
           key={i}
           onClick={() => handlePageClick(i)}
           className={i === currentPage ? "page-item active" : "page-item"}>
-          <a href="#" className="page-link">
+          <a  className="page-link">
             {i}
           </a>
         </li>
@@ -330,24 +392,23 @@ useEffect(() => {
       if (result.isConfirmed) {
         Swal.fire("Deleted!", "Your file has been deleted.", "success");
         try {
-      const response = axios.delete(
-        `http://localhost:5000/api/ath/delete/${id}`
-      );
-      // Update the clientCommands state to remove the deleted item
-      setFilteredClientList((prevState) =>
-        prevState.filter((item) => item._id !== id)
-      );
-    }catch (e) {
-      console.error(e);
-    }
+          const response = axios.delete(
+            `http://localhost:5000/api/ath/delete/${id}`
+          );
+          // Update the clientCommands state to remove the deleted item
+          setFilteredClientList((prevState) =>
+            prevState.filter((item) => item._id !== id)
+          );
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
-     
   };
   return (
     <div className="p-5">
-      <div className="row height d-flex justify-content-center align-items-center my-3">
-        <div className="col-md-6">
+      <div className="row height d-flex  align-items-center my-3">
+        <div className="col-md-6 ms-auto">
           <div className="form">
             <i className="fa fa-search"></i>
             <input
@@ -362,15 +423,67 @@ useEffect(() => {
             </span>
           </div>
         </div>
+        <div className="col-3 ms-5">
+          <input
+            type="checkbox"
+            onChange={handleFilterByBoxe}
+            className="form-controll"
+          />
+          <img
+            src="../assests/logo/gants-de-boxe (1).png"
+            width="30"
+            height="30"
+            alt="gym"
+            className="m-2"
+          />
+
+          <input
+            type="checkbox"
+            onChange={handleFilterBycardio}
+            className="form-controll"
+          />
+          <img
+            src="../assests/logo/des-exercices-detirement.png"
+            width="30"
+            height="30"
+            alt="cardio"
+            className="m-2"
+          />
+          <input
+            type="checkbox"
+            onChange={handleFilterBytaekwando}
+            className="form-controll"
+          />
+          <img
+            src="../assests/logo/karate.png"
+            width="30"
+            height="30"
+            alt="Taekwando"
+            className="m-2"
+          />
+          <input
+            type="checkbox"
+            onChange={handleFilterBymusculation}
+            className="form-controll"
+          />
+          <img
+            src="../assests/logo/gym.png"
+            width="30"
+            height="30"
+            alt="gym"
+            className="m-2"
+          />
+        </div>
       </div>
 
       <div className="table-wrapper">
         <table className="table table-striped bg-light">
           <thead>
             <tr>
+              <td>Photo</td>
               <td>Prénom</td>
               <td>Nom</td>
-              <td>Address</td>
+              
               <td>Numéro Téléphonique</td>
               <td>Abonnement type</td>
               <td>Abonnement Commencer</td>
@@ -389,9 +502,17 @@ useEffect(() => {
             {filteredClientList.map((client) => {
               return (
                 <tr>
+                  <td>
+                    <img
+                      src={client.imageURL}
+                      className="m-2 rounded-circle object-fit-contain"
+                      height="100"
+                      width="100"
+                    />
+                  </td>
                   <td>{client.name}</td>
                   <td>{client.lastname}</td>
-                  <td>{client.address}</td>
+
                   <td>{client.phonenumber}</td>
                   <td>
                     {client.musculation ? (
@@ -450,17 +571,16 @@ useEffect(() => {
                         className="form-control z-3 m-2"
                       />
                     ) : (
-                      <>
-                        {isDatePassed(client.finDate, client._id, client)}
-                       
-                      </>
+                      <>{isDatePassed(client.finDate, client._id, client)}</>
                     )}
                   </td>
                   <td>
                     <button
-                      className="btn btn-outline-success m-3 rounded-4 fw-bold"
-                      onClick={() => handleSave(client._id, finDate, client,1)}>
-                      Enregistrer
+                      className="btn btn-outline-success m-3 rounded-pill fw-bold"
+                      onClick={() =>
+                        handleSave(client._id, finDate, client, 1)
+                      }>
+                      <i className="fa-solid fa-floppy-disk fs-5"></i>
                     </button>
                   </td>
                   <td>

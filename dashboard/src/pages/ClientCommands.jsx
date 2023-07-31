@@ -8,15 +8,16 @@ function ClientCommands() {
   const [finDate, setFintDate] = useState(new Date());
   const [signinmsg, setsigninmsg] = useState("");
   const [verificationMessage, setVerificationMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   const [register, setregister] = useState({
     name: "",
-    email: "",
     lastname: "",
     phonenumber: "",
     address: "",
     password: "",
     startdate: startDate,
     finDate: finDate,
+    profilePicture: null,
     musculation: false,
     boxe: false,
     cardio: false,
@@ -32,47 +33,63 @@ function ClientCommands() {
       setregister({ ...register, [name]: value });
     }
   }
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setregister({ ...register, profilePicture: file });
+  };
+async function registerform(e) {
+  e.preventDefault();
+  const formDataToSend = new FormData();
 
-  console.log(finDate);
-  console.log(startDate);
-  async function registerform(e) {
-    e.preventDefault();
-    console.log(register);
-    const updatedRegister = {
-      ...register,
-      startdate: startDate,
-      finDate: finDate,
-    };
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/ath/register",
-        updatedRegister
-      );
-      setsigninmsg(response.data);
-      console.log(response.data);
-      const timeoutId = setTimeout(() => {
-        setsigninmsg("");
-      }, 3000);
+  formDataToSend.append("name", register.name);
+  formDataToSend.append("lastname", register.lastname);
+  formDataToSend.append("phonenumber", register.phonenumber);
+  formDataToSend.append("address", register.address);
+  formDataToSend.append("password", register.password);
+  formDataToSend.append("startdate", startDate);
+  formDataToSend.append("finDate", finDate);
 
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    } catch (error) {
-      setVerificationMessage(error.response.data);
-      const timeoutId = setTimeout(() => {
-        setVerificationMessage("");
-      }, 3000);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
+  if (register.profilePicture) {
+    formDataToSend.append("profilePicture", register.profilePicture);
   }
+
+  formDataToSend.append("musculation", register.musculation);
+  formDataToSend.append("boxe", register.boxe);
+  formDataToSend.append("cardio", register.cardio);
+  formDataToSend.append("taekwondo", register.taekwondo);
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/ath/register",
+      formDataToSend
+    );
+
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  }
+}
   return (
     <div className="container mx-auto d-flex flex-column justify-content-start bg-light mt-5 p-3 rounded-4">
       <h1 className="mb-4 fw-bolder text-center">Creation De Nouveau Abonné</h1>
 
       <form onSubmit={registerform} className="row ms-4 mx-auto">
+        <div className="row mx-auto">
+          <div className="col-10 col-lg-5 my-2 mx-auto ps-5">
+            <i
+              class="fa-solid fa-circle-user "
+              style={{ fontSize: "100px", marginLeft: "6rem" }}></i>
+
+            <input
+              class="btn btn-dark  mt-3"
+              id="formFileSm"
+              type="file"
+              name="profilePicture"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </div>
+        </div>
         <div className="col-lg-5 col-10 my-2">
           <label className="text-black m-1 form-check-label  ">Nom</label>
           <input
@@ -108,7 +125,7 @@ function ClientCommands() {
             className="form-control"
           />
         </div>
-        
+
         <div className="col-lg-5 col-10 my-2">
           <label className="text-black m-1 form-check-label  ">Address </label>
           <input
@@ -237,28 +254,7 @@ function ClientCommands() {
             </label>
           </div>
         </div>
-        <div className="row">
-          {signinmsg && (
-            <div
-              className={`alert  alert-success  mx-auto  col-4 alert-verification ${
-                signinmsg && "alertfadeup"
-              }`}
-              style={{ fontSize: "14px" }}
-              role="alert">
-              {signinmsg}
-            </div>
-          )}
-          {verificationMessage && (
-            <div
-              className={`alert alert-danger mx-auto col-4  alert-verification ${
-                verificationMessage && "alertfadeup"
-              }`}
-              style={{ fontSize: "14px" }}
-              role="alert">
-              {verificationMessage}
-            </div>
-          )}
-        </div>
+
         <div className="row">
           <button type="submit" className="btn btn-dark mx-auto col-4 p-2">
             Créer nouveau compte

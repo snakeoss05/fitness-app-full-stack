@@ -36,11 +36,13 @@ export default class UserDao {
     startdate,
     finDate,
     phonenumber,
-    musculation,
-    boxe,
+    fixedPath,
     hashedPassword,
+    boxe,
+    taekwando,
     cardio,
-    taekwondo
+    karaté,
+    musculation
   ) {
     try {
       const existingUser = await connection.findOne({
@@ -57,11 +59,13 @@ export default class UserDao {
         startdate: startdate,
         finDate: finDate,
         phonenumber: phonenumber,
-        musculation: musculation,
-        boxe: boxe,
         hashedPassword: hashedPassword,
+        filePath: fixedPath,
+        boxe: boxe,
+        taekwando: taekwando,
         cardio: cardio,
-        taekwondo: taekwondo,
+        karaté: karaté,
+        musculation: musculation,
       });
 
       const savedUser = await connection.insertOne(newUser);
@@ -136,12 +140,12 @@ export default class UserDao {
         const cliente = await connection
           .find({
             $or: [
+              { phonenumber: query },
               { name: { $regex: query, $options: "i" } },
               { lastname: { $regex: query, $options: "i" } },
-              { phonenumber: query },
             ],
           })
-          
+
           .toArray();
         return cliente;
       }
@@ -172,6 +176,154 @@ export default class UserDao {
       );
 
       return user;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  static async findgpBoxe(page, limit) {
+    const totalItems = await connection.countDocuments(); // Total number of items in the collection
+    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
+    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < totalItems) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    try {
+      results.results = await connection
+        .find({ boxe: true })
+        .limit(limit)
+        .skip(startIndex)
+        .toArray();
+
+      return {
+        results,
+        currentPage: page,
+        totalPages,
+        totalItems,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  static async findgptaekwando(page, limit) {
+    const totalItems = await connection.countDocuments(); // Total number of items in the collection
+    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
+    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < totalItems) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    try {
+      results.results = await connection
+        .find({ taekwando: true })
+        .limit(limit)
+        .skip(startIndex)
+        .toArray();
+
+      return {
+        results,
+        currentPage: page,
+        totalPages,
+        totalItems,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  static async findgpCardio(page, limit) {
+    const totalItems = await connection.countDocuments(); // Total number of items in the collection
+    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
+    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < totalItems) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    try {
+      results.results = await connection
+        .find({ cardio: true })
+        .limit(limit)
+        .skip(startIndex)
+        .toArray();
+
+      return {
+        results,
+        currentPage: page,
+        totalPages,
+        totalItems,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  static async findgpMusculation(page, limit) {
+    const totalItems = await connection.countDocuments(); // Total number of items in the collection
+    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
+    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
+    const endIndex = page * limit;
+    const results = {};
+
+    if (endIndex < totalItems) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      results.prev = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    try {
+      results.results = await connection
+        .find({ musculation: true })
+        .limit(limit)
+        .skip(startIndex)
+        .toArray();
+
+      return {
+        results,
+        currentPage: page,
+        totalPages,
+        totalItems,
+      };
     } catch (error) {
       console.error(error);
       throw error;

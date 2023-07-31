@@ -11,6 +11,7 @@ const app = express();
 
 app.use(cors());
 app.use(cookieParser());
+app.use("/uploads", express.static("uploads"));
 app.use(bodyParser.json());
 app.use("/api/submit-form", submitform);
 app.use("/api/ath", authentification);

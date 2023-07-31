@@ -31,7 +31,8 @@ export default class FormController {
     const limit = parseInt(req.query.limit) || 1;
     try {
       const items = await FormDAO.getHistorique(page, limit);
-      res.json(items);
+   
+      res.json({items});
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
@@ -95,6 +96,18 @@ export default class FormController {
 
     try {
       const scheduleDelete = await FormDAO.deleteSchedule(id);
+      res.status(200).json(scheduleDelete);
+    } catch (e) {
+      console.error(`Unable to delete schedule with id ${id}: ${e}`);
+      res.status(500).send({ error: e });
+    }
+  }
+  static async UpdateSchedule(req, res) {
+   const { day } = req.params;
+   const { time } = req.body;
+
+    try {
+      const scheduleDelete = await FormDAO.UpdateSchedule(day,time);
       res.status(200).json(scheduleDelete);
     } catch (e) {
       console.error(`Unable to delete schedule with id ${id}: ${e}`);

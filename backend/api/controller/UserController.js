@@ -2,8 +2,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-
+import path  from "path";
 import UserDao from "../DAO/UserDAO.js";
+
 dotenv.config();
 
 export default class UserController {
@@ -16,13 +17,22 @@ export default class UserController {
       finDate,
       password,
       phonenumber,
-      musculation,
       boxe,
+      taekwando,
       cardio,
-      taekwondo,
+      karaté,
+      musculation,
     } = req.body;
 
+    const file = req.file; // Get the uploaded file from the request
+
+    if (!file) {
+      return res.status(400).json({ error: "Please upload an image file." });
+    }
+
     try {
+      const filePath = file.path;
+      const fixedPath = filePath.replace(/\\/g, "/");
       const saltRounds = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const result = await UserDao.registerUser(
@@ -32,12 +42,15 @@ export default class UserController {
         startdate,
         finDate,
         phonenumber,
-        musculation,
-        boxe,
+        fixedPath,
         hashedPassword,
+        boxe,
+        taekwando,
         cardio,
-        taekwondo
+        karaté,
+        musculation
       );
+
       if (result.error) {
         return res.status(400).send(result.error); // use 400 status code for bad request
       }
@@ -108,7 +121,17 @@ export default class UserController {
     const limit = parseInt(req.query.limit) || 1;
     try {
       const items = await UserDao.getClientse(page, limit);
-      res.json(items);
+
+      const profilesWithImages = items.results.results.map((userProfile) => {
+        const imageFileName = userProfile.filePath;
+        const imageURL = `${req.protocol}://${req.get(
+          "host"
+        )}/${imageFileName}`;
+        return { ...userProfile, imageURL }; // Add the imageURL to each user profile
+      });
+      items.results = profilesWithImages;
+
+      res.json({ items });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
@@ -143,26 +166,93 @@ export default class UserController {
       res.status(500).json({ message: "Server error" });
     }
   }
-  static async userSendMsg(req, res) {
-    const { id, msg, date } = req.body;
-    try {
-      const userMsg = await UserDao.UserSend(id, msg, date);
-      res.status(200).json(userMsg);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
-    }
-  }
+
   static async deleteUser(req, res) {
     const { id } = req.params;
- 
+
     try {
-      const UserDelete = await UserDao.deleteUserDao(id)
-       res.status(200).json(UserDelete);
-    
+      const UserDelete = await UserDao.deleteUserDao(id);
+      res.status(200).json(UserDelete);
     } catch (e) {
       console.error(`Unable to delete client with id ${id}: ${e}`);
       res.status(500).send({ error: e });
     }
   }
+   static async getgpBoxe(req, res) {
+  const page = parseInt(req.query.page) || 1; // Current page number
+  const limit = parseInt(req.query.limit) || 1;
+  try {
+    const newFormData = await UserDao.findgpBoxe(page, limit);
+      const profilesWithImages = newFormData.results.results.map((userProfile) => {
+      const imageFileName = userProfile.filePath;
+      const imageURL = `${req.protocol}://${req.get("host")}/${imageFileName}`;
+      return { ...userProfile, imageURL };
+    });
+   newFormData.results = profilesWithImages;
+
+    res.json({ newFormData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+  static async getgpCardio(req, res) {
+    const page = parseInt(req.query.page) || 1; // Current page number
+    const limit = parseInt(req.query.limit) || 1;
+    try {
+      const newFormData = await UserDao.findgpCardio(page, limit);
+     const profilesWithImages = newFormData.results.results.map(
+       (userProfile) => {
+         const imageFileName = userProfile.filePath;
+         const imageURL = `${req.protocol}://${req.get(
+           "host"
+         )}/${imageFileName}`;
+         return { ...userProfile, imageURL };
+       }
+     );
+     newFormData.results = profilesWithImages;
+
+     res.json({ newFormData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  static async getgpTaekwando(req, res) {
+     const page = parseInt(req.query.page) || 1; // Current page number
+     const limit = parseInt(req.query.limit) || 1;
+    try {
+   const newFormData = await UserDao.findgptaekwando(page, limit);
+   const profilesWithImages = newFormData.results.results.map((userProfile) => {
+   const imageFileName = userProfile.filePath;
+   const imageURL = `${req.protocol}://${req.get("host")}/${imageFileName}`;
+   return { ...userProfile, imageURL };
+ });
+ newFormData.results = profilesWithImages;
+
+ res.json({ newFormData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  static async getgpMusculation(req, res) {
+       const page = parseInt(req.query.page) || 1; // Current page number
+       const limit = parseInt(req.query.limit) || 1;
+    try {
+     const newFormData = await UserDao.findgpMusculation(page, limit);
+     const profilesWithImages = newFormData.results.results.map((userProfile) => {
+     const imageFileName = userProfile.filePath;
+     const imageURL = `${req.protocol}://${req.get("host")}/${imageFileName}`;
+     return { ...userProfile, imageURL };
+   });
+   newFormData.results = profilesWithImages;
+
+   res.json({ newFormData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
 }
