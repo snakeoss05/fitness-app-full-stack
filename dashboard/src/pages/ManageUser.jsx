@@ -14,10 +14,12 @@ export default function ManageUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(3);
   const [posteperpage, setposteperpage] = useState(8);
-  const [schedule, setschedule] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("active");
   useEffect(() => {
     fetchItems(currentPage, posteperpage);
-  }, [currentPage]);
+  updateUserActivate();
+  }, [selectedCategory]);
+
 
   const fetchItems = async (page, limit) => {
     // Make a GET request to your Express backend to retrieve clientCommands data
@@ -25,7 +27,7 @@ export default function ManageUser() {
       const response = await axios.get(
         `http://localhost:5000/api/ath/clients?page=${page}&limit=${limit}`
       );
-      console.log(response.data)
+      
       const { results, totalPages } = response.data.items;
 
       const formattedData = results.map((entry) => ({
@@ -33,13 +35,48 @@ export default function ManageUser() {
         isEditing: false,
       }));
 
-      setClientList(formattedData);
-      setTotalPages(totalPages);
+if(selectedCategory==="active"){
+  let newListactive = formattedData.filter((i) => i.active === true);
+setClientList(newListactive);
+setTotalPages(totalPages);
+}
+else{
+  let newListInactive = formattedData.filter((i) => i.active === false);
+  setClientList(newListInactive);
+setTotalPages(totalPages);
+}
+
+      
     } catch (error) {
       console.error("Error retrieving items:", error);
     }
   };
-
+function updateUserActivate() {
+   
+ const currentDate = new Date();
+  clientList.map((item)=>{
+ if (Math.floor((item.finDate - currentDate) / (1000 * 60 * 60 * 24))<-7) {
+   handleUpdateuserState(item._id, false);
+ }
+  })
+ 
+ 
+  
+}
+    const handleUpdateuserState = async (id,b) => {
+     
+    try {
+     const response = await axios.put(
+       `http://localhost:5000/api/ath/userState/${id}`,
+        {b}
+     );
+     setFilteredClientList((prevState) =>
+       prevState.filter((item) => item.active !== false)
+     );
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleSearch = async () => {
     try {
       const response = await axios.get(
@@ -47,51 +84,23 @@ export default function ManageUser() {
       );
       if (query) {
         setFilteredClientList(response.data);
-      } else {
+      } 
+      else{
         setFilteredClientList(clientList);
       }
     } catch (error) {
       console.error(error);
     }
   };
-  const handleFilterByBoxe = async (e) => {
-    const { checked } = e.target;
-    if (checked) {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/ath/clients/boxe?page=${currentPage}&limit=${posteperpage}`
-        );
-       
-        const { results, totalPages } = response.data.newFormData;
-        setFilteredClientList(results);
-        setTotalPages(totalPages);
-      } catch (error) {
-        console.error(error);
-      }
-    } else setFilteredClientList(clientList);
-  };
-  const handleFilterBycardio = async (e) => {
-    const { checked } = e.target;
-    if (checked) {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/ath/clients/cardio?page=${currentPage}&limit=${posteperpage}`
-        );
 
-        const { results, totalPages } = response.data.newFormData;
-        setFilteredClientList(results);
-        setTotalPages(totalPages);
-      } catch (error) {
-        console.error(error);
-      }
-    } else setFilteredClientList(clientList);
-  };
-  const handleFilterBymusculation = async (e) => {
+  
+  const handleFilterByGroupe = async (e,g) => {
     const { checked } = e.target;
+    
     if (checked) {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/ath/clients/musculation?page=${currentPage}&limit=${posteperpage}`
+          `http://localhost:5000/api/ath/clients/musculation?page=${currentPage}&limit=${posteperpage}&groupe=${g}`
         );
 
          const { results, totalPages } = response.data.newFormData;
@@ -102,22 +111,7 @@ export default function ManageUser() {
       }
     } else setFilteredClientList(clientList);
   };
-  const handleFilterBytaekwando = async (e) => {
-    const { checked } = e.target;
-    if (checked) {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/ath/clients/taekwando?page=${currentPage}&limit=${posteperpage}`
-        );
 
-         const { results, totalPages } = response.data.newFormData;
-         setFilteredClientList(results);
-         setTotalPages(totalPages);
-      } catch (error) {
-        console.error(error);
-      }
-    } else setFilteredClientList(clientList);
-  };
   const debouncedHandleSearch = debounce(handleSearch, 500);
   const handleEdit = (id) => {
     setClientList((prevData) =>
@@ -148,6 +142,7 @@ export default function ManageUser() {
         "http://localhost:5000/api/submit-form/post",
         { client, updateDate, idClient, mois }
       );
+      handleUpdateuserState(idClient,true);
       Swal.fire({
         position: "top-center",
         icon: "success",
@@ -206,7 +201,7 @@ export default function ManageUser() {
               updateDate,
             }
           );
-
+         handleUpdateuserState(id, true);
           setClientList((prevData) =>
             prevData.map((entry) =>
               entry._id === id ? { ...entry, finDate: updateDate } : entry
@@ -241,7 +236,8 @@ export default function ManageUser() {
 
     const diffInMonths = (endYear - startYear) * 12 + (endMonth - startMonth);
 
-    return diffInDays;
+
+return diffInDays;
   }
 
   function formatDate(dateStr) {
@@ -265,15 +261,18 @@ export default function ManageUser() {
       month: "long",
       day: "numeric",
     });
+   
 
+  
     // Compare the given date with the current date
     if (givenDate < currentDate) {
       return (
         <>
+       
           <span className="ms-2">
             {formattedDate} il' ya de {diffInDays} jour
           </span>
-          <td>
+       
             <h6 className="css-selector-danger text-white text-center fw-bold">
               No Payer
             </h6>{" "}
@@ -302,14 +301,14 @@ export default function ManageUser() {
               onClick={() => handleEdit(client._id)}>
               <i className="fa-solid fa-wrench "></i>
             </button>
-          </td>
+          
         </>
       ); // The given date has already passed
     } else {
       return (
         <>
           {formattedDate} il' ya de {diffInDays} jour
-          <td>
+       
             <h6 className="css-selector-success text-white text-center fw-bold">
               Payer
             </h6>{" "}
@@ -338,11 +337,15 @@ export default function ManageUser() {
               onClick={() => handleEdit(client._id)}>
               <i className="fa-solid fa-wrench "></i>
             </button>
-          </td>
+          
         </>
+
       ); // The given date is in the future
+      
     }
+    
   }
+
 
   useEffect(() => {
     if (showAll) {
@@ -362,6 +365,10 @@ export default function ManageUser() {
   const handlePageClick = (page) => {
     setCurrentPage(page);
   };
+  const filterlistActive=(bo)=>{
+ setSelectedCategory(bo);
+  }
+
 
   const generatePaginationNavigation = () => {
     const navigation = [];
@@ -408,6 +415,18 @@ export default function ManageUser() {
   return (
     <div className="p-5">
       <div className="row height d-flex  align-items-center my-3">
+        <div className="col-1">
+          <button
+            className="btn btn-outline-success rounded-end-5"
+            onClick={() => filterlistActive("active")}>
+            Active
+          </button>
+          <button
+            className="btn btn-outline-danger rounded-end-5 "
+            onClick={() => filterlistActive("inActive")}>
+            InActive
+          </button>
+        </div>
         <div className="col-md-6 ms-auto">
           <div className="form">
             <i className="fa fa-search"></i>
@@ -419,60 +438,115 @@ export default function ManageUser() {
               onChange={handleInputChange}
             />
             <span className="left-pan">
-              <i className="fa-solid fa-filter"></i>
+              <i className="fa-solid fa-filter" onClick={handleSearch}></i>
             </span>
           </div>
         </div>
-        <div className="col-3 ms-5">
-          <input
-            type="checkbox"
-            onChange={handleFilterByBoxe}
-            className="form-controll"
-          />
-          <img
-            src="../assests/logo/gants-de-boxe (1).png"
-            width="30"
-            height="30"
-            alt="gym"
-            className="m-2"
-          />
+        <div className="col-4 ms-2">
+          <div className="row">
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "boxe")}
+                className="form-check-input"
+              />
+              <label className="form-check-label mx-2">Boxe</label>
+              <img
+                src="../assests/logo/gants-de-boxe (1).png"
+                width="30"
+                height="30"
+                alt="gym"
+              />
+            </div>
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "cardio")}
+                className="form-check-input"
+              />
+              <label className="form-check-label mx-2">Cardio</label>
+              <img
+                src="../assests/logo/des-exercices-detirement.png"
+                width="30"
+                height="30"
+                alt="cardio"
+                className=""
+              />
+            </div>
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "taekwando")}
+                className="form-check-input "
+              />
+              <label className="form-check-label mx-2">Taekwando</label>
 
-          <input
-            type="checkbox"
-            onChange={handleFilterBycardio}
-            className="form-controll"
-          />
-          <img
-            src="../assests/logo/des-exercices-detirement.png"
-            width="30"
-            height="30"
-            alt="cardio"
-            className="m-2"
-          />
-          <input
-            type="checkbox"
-            onChange={handleFilterBytaekwando}
-            className="form-controll"
-          />
-          <img
-            src="../assests/logo/karate.png"
-            width="30"
-            height="30"
-            alt="Taekwando"
-            className="m-2"
-          />
-          <input
-            type="checkbox"
-            onChange={handleFilterBymusculation}
-            className="form-controll"
-          />
-          <img
-            src="../assests/logo/gym.png"
-            width="30"
-            height="30"
-            alt="gym"
-            className="m-2"
-          />
+              <img
+                src="../assests/logo/karate.png"
+                width="30"
+                height="30"
+                alt="Taekwando"
+                className=" "
+              />
+            </div>
+            <div className="mx-2 col-5">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "musculation")}
+                className="form-check-input "
+              />
+              <label className="form-check-label mx-2">Musculation</label>
+              <img
+                src="../assests/logo/gym.png"
+                width="30"
+                height="30"
+                alt="gym"
+                className=""
+              />
+            </div>
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "karaté")}
+                className="form-check-input "
+              />
+              <label className="form-check-label mx-2">Karaté</label>
+              <img
+                src="../assests/logo/dqsda.png"
+                width="30"
+                height="30"
+                alt="gym"
+              />
+            </div>
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "femme")}
+                className="form-check-input "
+              />
+              <label className="form-check-label mx-2">100% Femme</label>
+              <img
+                src="../assests/logo/fentes.png"
+                width="30"
+                height="30"
+                alt="femme"
+              />
+            </div>
+            <div className="mx-2 col-4">
+              <input
+                type="checkbox"
+                onChange={(e) => handleFilterByGroupe(e, "karaté")}
+                className="form-check-input "
+              />
+              <label className="form-check-label mx-2">Karaté</label>
+              <img
+                src="../assests/logo/woman.png"
+                width="30"
+                height="30"
+                alt="femme"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -483,8 +557,8 @@ export default function ManageUser() {
               <td>Photo</td>
               <td>Prénom</td>
               <td>Nom</td>
-              
-              <td>Numéro Téléphonique</td>
+
+              <td>Numéro De Téléphone</td>
               <td>Abonnement type</td>
               <td>Abonnement Commencer</td>
               <td>
@@ -501,13 +575,14 @@ export default function ManageUser() {
           <tbody>
             {filteredClientList.map((client) => {
               return (
-                <tr>
+                <tr key={client._id}>
                   <td>
                     <img
                       src={client.imageURL}
                       className="m-2 rounded-circle object-fit-contain"
                       height="100"
                       width="100"
+                      alt="photoprofile"
                     />
                   </td>
                   <td>{client.name}</td>
@@ -515,7 +590,7 @@ export default function ManageUser() {
 
                   <td>{client.phonenumber}</td>
                   <td>
-                    {client.musculation ? (
+                    {client.musculation && (
                       <img
                         src="../assests/logo/gym.png"
                         width="30"
@@ -523,10 +598,26 @@ export default function ManageUser() {
                         alt="gym"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.cardio ? (
+                    {client.femme && (
+                      <img
+                        src="../assests/logo/fentes.png"
+                        width="30"
+                        height="30"
+                        alt="femme"
+                        className="m-2"
+                      />
+                    )}
+                    {client.karaté && (
+                      <img
+                        src="../assests/logo/woman.png"
+                        width="30"
+                        height="30"
+                        alt="karaté"
+                        className="m-2"
+                      />
+                    )}
+                    {client.cardio && (
                       <img
                         src="../assests/logo/des-exercices-detirement.png"
                         width="30"
@@ -534,10 +625,8 @@ export default function ManageUser() {
                         alt="cardio"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.boxe ? (
+                    {client.boxe && (
                       <img
                         src="../assests/logo/gants-de-boxe (1).png"
                         width="30"
@@ -545,10 +634,8 @@ export default function ManageUser() {
                         alt="gym"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.taekwondo ? (
+                    {client.taekwondo && (
                       <img
                         src="../assests/logo/karate.png"
                         width="30"
@@ -556,8 +643,24 @@ export default function ManageUser() {
                         alt="gym"
                         className="m-2"
                       />
-                    ) : (
-                      ""
+                    )}
+                    {client.femme && (
+                      <img
+                        src="../assests/logo/dqsda.png"
+                        width="30"
+                        height="30"
+                        alt="gym"
+                        className="m-2"
+                      />
+                    )}
+                    {client.physique && (
+                      <img
+                        src="../assests/logo/stretching.png"
+                        width="30"
+                        height="30"
+                        alt="gym"
+                        className="m-2"
+                      />
                     )}
                   </td>
                   <td className=" font-monospace">
@@ -574,6 +677,7 @@ export default function ManageUser() {
                       <>{isDatePassed(client.finDate, client._id, client)}</>
                     )}
                   </td>
+
                   <td>
                     <button
                       className="btn btn-outline-success m-3 rounded-pill fw-bold"

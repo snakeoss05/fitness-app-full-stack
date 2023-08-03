@@ -40,8 +40,10 @@ export default class UserDao {
     hashedPassword,
     boxe,
     taekwando,
+    femme,
     cardio,
     karaté,
+    physique,
     musculation
   ) {
     try {
@@ -65,7 +67,10 @@ export default class UserDao {
         taekwando: taekwando,
         cardio: cardio,
         karaté: karaté,
+        femme:femme,
+        physique:physique,
         musculation: musculation,
+        active: true,
       });
 
       const savedUser = await connection.insertOne(newUser);
@@ -137,18 +142,17 @@ export default class UserDao {
   static async getClientByName(query) {
     try {
       if (query) {
-        const cliente = await connection
-          .find({
+        const regexQuery = new RegExp(`.*${query}.*`, "i");
+        const cliente = await connection.find({
             $or: [
               { phonenumber: query },
-              { name: { $regex: query, $options: "i" } },
-              { lastname: { $regex: query, $options: "i" } },
+              { name: regexQuery },
+              { lastname: regexQuery },
             ],
-          })
-
-          .toArray();
+          }).toArray();
         return cliente;
-      }
+      } 
+
     } catch (e) {
       console.error(`Unable to retrieve products with query ${query}: ${e}`);
       return { error: e };
@@ -172,7 +176,8 @@ export default class UserDao {
     try {
       const user = await connection.findOne(
         { _id: new ObjectId(id) },
-        { maxTimeMS: 30000 }
+        { maxTimeMS: 30000 },
+        { new: true }
       );
 
       return user;
@@ -181,50 +186,28 @@ export default class UserDao {
       throw error;
     }
   }
-  static async findgpBoxe(page, limit) {
-    const totalItems = await connection.countDocuments(); // Total number of items in the collection
-    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
-    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
-    const endIndex = page * limit;
-    const results = {};
-
-    if (endIndex < totalItems) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-    if (startIndex > 0) {
-      results.prev = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
+  static async UpdateUserState(id,b) {
     try {
-      results.results = await connection
-        .find({ boxe: true })
-        .limit(limit)
-        .skip(startIndex)
-        .toArray();
+      const user = await connection.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { active: b } },
+        { new: true }
+      );
 
-      return {
-        results,
-        currentPage: page,
-        totalPages,
-        totalItems,
-      };
+      return user;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-  static async findgptaekwando(page, limit) {
+
+  static async findgpMusculation(page, limit,groupe) {
     const totalItems = await connection.countDocuments(); // Total number of items in the collection
     const totalPages = Math.ceil(totalItems / limit); // Total number of pages
     const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
     const endIndex = page * limit;
     const results = {};
-
+   
     if (endIndex < totalItems) {
       results.next = {
         page: page + 1,
@@ -237,83 +220,11 @@ export default class UserDao {
         limit: limit,
       };
     }
+     
     try {
+       
       results.results = await connection
-        .find({ taekwando: true })
-        .limit(limit)
-        .skip(startIndex)
-        .toArray();
-
-      return {
-        results,
-        currentPage: page,
-        totalPages,
-        totalItems,
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-  static async findgpCardio(page, limit) {
-    const totalItems = await connection.countDocuments(); // Total number of items in the collection
-    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
-    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
-    const endIndex = page * limit;
-    const results = {};
-
-    if (endIndex < totalItems) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-    if (startIndex > 0) {
-      results.prev = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
-    try {
-      results.results = await connection
-        .find({ cardio: true })
-        .limit(limit)
-        .skip(startIndex)
-        .toArray();
-
-      return {
-        results,
-        currentPage: page,
-        totalPages,
-        totalItems,
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-  static async findgpMusculation(page, limit) {
-    const totalItems = await connection.countDocuments(); // Total number of items in the collection
-    const totalPages = Math.ceil(totalItems / limit); // Total number of pages
-    const startIndex = (page - 1) * limit; // Offset to skip items based on the current page
-    const endIndex = page * limit;
-    const results = {};
-
-    if (endIndex < totalItems) {
-      results.next = {
-        page: page + 1,
-        limit: limit,
-      };
-    }
-    if (startIndex > 0) {
-      results.prev = {
-        page: page - 1,
-        limit: limit,
-      };
-    }
-    try {
-      results.results = await connection
-        .find({ musculation: true })
+        .find({[groupe]:true})
         .limit(limit)
         .skip(startIndex)
         .toArray();

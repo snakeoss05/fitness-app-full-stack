@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import DarkModeToggle from "./DarkModeToggle";
+
 export default function Sidebar() {
   return (
     <div>
@@ -17,7 +18,7 @@ export default function Sidebar() {
         <div className="l-navbar" id="nav-bar">
           <nav className="nav">
             <div>
-              <DarkModeToggle />
+              
               <a href="#" className="nav_logo">
                 {" "}
                 <i className="bx bx-layer nav_logo-icon" />{" "}

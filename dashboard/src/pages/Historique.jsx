@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useEffect, useState } from "react";
 import "../css/historique.css"
 import "../css/chat.css";
 import axios from "axios";
@@ -21,7 +22,7 @@ useEffect(() => {
      const response = await axios.get(
        `http://localhost:5000/api/submit-form/historique?page=${page}&limit=${limit}`
      );
-     const { results, totalPages } = response.data;
+     const { results, totalPages } = response.data.items;
      console.log(response.data)
      setFilterClient(results.results);
      setTotalPages(totalPages);
@@ -93,19 +94,7 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
    }
    return navigation;
  };
- const handleDelete = async (id) => {
-   try {
-     const response = await axios.delete(
-       `https://alakifekbackend.onrender.com/api/submit-form/delete/${id}`
-     );
-     // Update the clientCommands state to remove the deleted item
-     setFilterClient((prevState) =>
-       prevState.filter((item) => item._id !== id)
-     );
-   } catch (e) {
-     console.error(e);
-   }
- };
+ 
   return (
     <div className="container-fluid p-5 ms-3">
       <div className="row height d-flex justify-content-center align-items-center my-3">
@@ -149,7 +138,7 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
                   <td>{client.client.lastname}</td>
                   <td>
                     {" "}
-                    {client.client.musculation ? (
+                    {client.client.musculation && (
                       <img
                         src="../assests/logo/gym.png"
                         width="30"
@@ -157,10 +146,8 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
                         alt="gym"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.client.cardio ? (
+                    {client.client.cardio && (
                       <img
                         src="../assests/logo/des-exercices-detirement.png"
                         width="30"
@@ -168,35 +155,55 @@ const debouncedHandleSearch = debounce(handleSearch, 500);
                         alt="cardio"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.client.boxe ? (
+                    {client.client.boxe && (
                       <img
                         src="../assests/logo/gants-de-boxe (1).png"
                         width="30"
                         height="30"
-                        alt="gym"
+                        alt="boxe"
                         className="m-2"
                       />
-                    ) : (
-                      ""
                     )}
-                    {client.client.taekwondo ? (
+                    {client.client.taekwondo && (
                       <img
                         src="../assests/logo/karate.png"
                         width="30"
                         height="30"
-                        alt="gym"
+                        alt="karate"
                         className="m-2"
                       />
-                    ) : (
-                      ""
+                    )}
+                    {client.client.femme && (
+                      <img
+                        src="../assests/logo/fentes.png"
+                        width="30"
+                        height="30"
+                        alt="fentes"
+                        className="m-2"
+                      />
+                    )}
+                    {client.client.physique && (
+                      <img
+                        src="../assests/logo/stretching.png"
+                        width="30"
+                        height="30"
+                        alt="stretching"
+                        className="m-2"
+                      />
+                    )}
+                    {client.client.karaté && (
+                      <img
+                        src="../assests/logo/woman.png"
+                        width="30"
+                        height="30"
+                        alt="woman"
+                        className="m-2"
+                      />
                     )}
                   </td>
                   <td>{formatDateNoH(client.finDate)}</td>
                   <td>{client.mois} Mois</td>
-                 
                 </tr>
               );
             })}

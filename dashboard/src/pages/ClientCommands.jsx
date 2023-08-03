@@ -6,8 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 function ClientCommands() {
   const [startDate, setStartDate] = useState(new Date());
   const [finDate, setFintDate] = useState(new Date());
-  const [signinmsg, setsigninmsg] = useState("");
-  const [verificationMessage, setVerificationMessage] = useState("");
+  const [alertsuccessmsg, setsuccessmsg] = useState();
+  const [alertdangermsg, setdangermsg] = useState();
   const [selectedImage, setSelectedImage] = useState(null);
   const [register, setregister] = useState({
     name: "",
@@ -16,12 +16,15 @@ function ClientCommands() {
     address: "",
     password: "",
     startdate: startDate,
+    femme: false,
     finDate: finDate,
     profilePicture: null,
     musculation: false,
     boxe: false,
+    karaté: false,
     cardio: false,
     taekwondo: false,
+    physique:false,
   });
 
   function HandleChange(event) {
@@ -55,6 +58,9 @@ async function registerform(e) {
 
   formDataToSend.append("musculation", register.musculation);
   formDataToSend.append("boxe", register.boxe);
+  formDataToSend.append("femme", register.femme);
+  formDataToSend.append("physique", register.physique);
+  formDataToSend.append("karaté", register.karaté);
   formDataToSend.append("cardio", register.cardio);
   formDataToSend.append("taekwondo", register.taekwondo);
 
@@ -63,11 +69,13 @@ async function registerform(e) {
       "http://localhost:5000/api/ath/register",
       formDataToSend
     );
-
-    console.log(response);
+setsuccessmsg(response.data);
+  
   } catch (error) {
-    console.log(error);
+    
+setdangermsg(error.response.data);
   }
+
 }
   return (
     <div className="container mx-auto d-flex flex-column justify-content-start bg-light mt-5 p-3 rounded-4">
@@ -85,6 +93,7 @@ async function registerform(e) {
               id="formFileSm"
               type="file"
               name="profilePicture"
+              required
               accept="image/*"
               onChange={handleFileChange}
             />
@@ -97,6 +106,7 @@ async function registerform(e) {
             name="name"
             onChange={HandleChange}
             value={register.name}
+            required
             className="form-control"
             placeholder="Kamel"
           />
@@ -108,6 +118,7 @@ async function registerform(e) {
             name="lastname"
             onChange={HandleChange}
             value={register.lastname}
+            required
             className="form-control"
             placeholder="Frigui"
           />
@@ -120,6 +131,7 @@ async function registerform(e) {
             type="password"
             name="password"
             onChange={HandleChange}
+            required
             value={register.password}
             placeholder="********"
             className="form-control"
@@ -133,6 +145,7 @@ async function registerform(e) {
             name="address"
             value={register.address}
             onChange={HandleChange}
+            required
             className="form-control"
             placeholder="Example: 45 Rue tattawer Cité Tahrir"
           />
@@ -146,14 +159,13 @@ async function registerform(e) {
             name="phonenumber"
             value={register.phonenumber}
             onChange={HandleChange}
+            required
             className="form-control"
             placeholder="Example: 27-365-486"
           />
         </div>
         <div className="col-lg-3 col-10 my-2">
-          <label class="form-check-label col-12" for="flexCheckDefault">
-            Date de Commencer
-          </label>
+          <label class="form-check-label col-12">Date de Commencer</label>
           <DatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
@@ -162,18 +174,16 @@ async function registerform(e) {
         </div>
 
         <div className="col-lg-2 col-10 my-2 ">
-          <label class="form-check-label col-12" for="flexCheckDefault">
-            Date de terminé
-          </label>
+          <label class="form-check-label col-12">Date de terminé</label>
           <DatePicker
             selected={finDate}
             onChange={(date) => setFintDate(date)}
             className="form-control mt-2"
           />
         </div>
-        <div className="col-lg-8 col-10">
+        <div className="row">
           <h5 className="m-2 text-secondary fw-bold"> Abonnement Type :</h5>
-          <div class="form-check m-3">
+          <div class="col-2 m-3">
             <input
               class="form-check-input mt-3"
               type="checkbox"
@@ -189,11 +199,9 @@ async function registerform(e) {
               alt="gym"
               className="m-2"
             />
-            <label class="form-check-label" for="Musculationcheck">
-              Musculation
-            </label>
+            <label class="form-check-label">Musculation</label>
           </div>
-          <div class="form-check m-3">
+          <div class=" col-2 m-3">
             <input
               className="form-check-input mt-3"
               type="checkbox"
@@ -209,11 +217,9 @@ async function registerform(e) {
               alt="gym"
               className="m-2"
             />
-            <label class="form-check-label" for="cardiocheck">
-              Cardio
-            </label>
+            <label class="form-check-label">Cardio</label>
           </div>
-          <div class="form-check m-3">
+          <div class="col-2 m-3">
             <input
               className="form-check-input mt-3"
               type="checkbox"
@@ -229,11 +235,9 @@ async function registerform(e) {
               alt="gym"
               className="m-2"
             />
-            <label className="form-check-label" for="boxecheck">
-              boxe
-            </label>
+            <label className="form-check-label">boxe</label>
           </div>
-          <div className="form-check m-3">
+          <div className="col-2 m-3">
             <input
               className="form-check-input mt-3"
               type="checkbox"
@@ -246,15 +250,76 @@ async function registerform(e) {
               src="../assests/logo/karate.png"
               width="50"
               height="50"
-              alt="gym"
+              alt="taekwando"
               className="m-2"
             />
-            <label className="form-check-label" for="taekwondoCheck">
-              Taekwondo
-            </label>
+            <label className="form-check-label">Taekwondo</label>
+          </div>
+          <div className="col-2 m-3">
+            <input
+              className="form-check-input mt-3"
+              type="checkbox"
+              onChange={HandleChange}
+              name="karaté"
+              checked={register.karaté}
+              id="karatéCheck"
+            />
+            <img
+              src="../assests/logo/woman.png"
+              width="50"
+              height="50"
+              alt="karaté"
+              className="m-2"
+            />
+            <label className="form-check-label">Karaté</label>
+          </div>
+          <div className="col-2 m-3">
+            <input
+              className="form-check-input mt-3"
+              type="checkbox"
+              onChange={HandleChange}
+              name="femme"
+              checked={register.femme}
+              id="femmeCheck"
+            />
+            <img
+              src="../assests/logo/fentes.png"
+              width="50"
+              height="50"
+              alt="femme"
+              className="m-2"
+            />
+            <label className="form-check-label">100% Femme</label>
+          </div>
+          <div className="col-2 m-3">
+            <input
+              className="form-check-input mt-3"
+              type="checkbox"
+              onChange={HandleChange}
+              name="physique"
+              checked={register.physique}
+              id="physiqueéCheck"
+            />
+            <img
+              src="../assests/logo/stretching.png"
+              width="50"
+              height="50"
+              alt="physique"
+              className="m-2"
+            />
+            <label className="form-check-label">Physique</label>
           </div>
         </div>
-
+        {alertsuccessmsg && (
+          <div className="alert alert-success" role="alert">
+            {alertsuccessmsg}
+          </div>
+        )}
+        {alertdangermsg && (
+          <div className="alert alert-success" role="alert">
+            {alertdangermsg}
+          </div>
+        )}
         <div className="row">
           <button type="submit" className="btn btn-dark mx-auto col-4 p-2">
             Créer nouveau compte

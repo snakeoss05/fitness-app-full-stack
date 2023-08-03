@@ -11,10 +11,13 @@ const userSchema = new mongoose.Schema({
   boxe: { type: Boolean },
   hashedPassword: { type: String },
   cardio: { type: Boolean },
-  karaté:{ type: Boolean },
+  active: { type: Boolean },
+  karaté: { type: Boolean },
+  femme: { type: Boolean },
+  physique: { type: Boolean },
   taekwondo: { type: Boolean },
-  filePath:{ type: String },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  filePath: { type: String },
+ 
 });
 
 const User = mongoose.model("User", userSchema);

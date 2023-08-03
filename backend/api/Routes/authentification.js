@@ -26,14 +26,12 @@ router.post(
 
 router.post("/login", UserController.loginUser);
 router.put("/user/:id", UserController.updateUser);
+router.put("/userState/:id", UserController.updateUserState);
 router.get("/Search/:query", UserController.getClientsByName);
 router.get("/profile", UserController.authenticateToken);
 router.get("/user", UserController.getUserProfile);
 router.get("/clients", UserController.getClients);
-router.get("/clients/boxe", UserController.getgpBoxe);
-router.get("/clients/cardio", UserController.getgpCardio);
 router.get("/clients/musculation", UserController.getgpMusculation);
-router.get("/clients/taekwando", UserController.getgpTaekwando);
 router.delete("/delete/:id", UserController.deleteUser);
 
 export default router;
